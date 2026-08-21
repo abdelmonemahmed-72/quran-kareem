@@ -1,0 +1,1 @@
+export default function Loading({text='جاري التحميل...'}:{text?:string}){return <div className="grid min-h-[260px] place-items-center"><div className="text-center"><div className="mx-auto mb-3 h-9 w-9 animate-spin rounded-full border-2 border-forest/20 border-t-gold"/><p className="text-sm text-muted">{text}</p></div></div>}

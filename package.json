@@ -1,0 +1,39 @@
+{
+  "name": "quran-kareem",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run offline:check && tsc -b && vite build",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:add:android": "npx cap add android",
+    "android:debug": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "android:release": "npm run build && npx cap sync android && cd android && ./gradlew assembleRelease",
+    "offline:prepare": "node scripts/prepare-offline.mjs",
+    "offline:audio": "node scripts/download-audio.mjs",
+    "offline:check": "node scripts/check-offline-assets.mjs",
+    "offline:full": "npm run offline:prepare && node scripts/download-audio.mjs --all"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.1",
+    "@capacitor/core": "^7.4.0",
+    "@capacitor/android": "^7.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.6.3",
+    "vite": "^6.0.7",
+    "vite-plugin-pwa": "^0.21.1",
+    "@capacitor/cli": "^7.4.0"
+  }
+}
