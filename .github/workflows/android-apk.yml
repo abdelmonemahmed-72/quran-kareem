@@ -33,8 +33,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Fix Vite permissions
-        run: chmod +x node_modules/.bin/vite
+      - name: Fix Node permissions
+        run: chmod +x node_modules/.bin/vite node_modules/.bin/cap
 
       - name: Build web app
         run: npm run build
