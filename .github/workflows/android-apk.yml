@@ -8,8 +8,9 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout
@@ -54,8 +55,21 @@ jobs:
         working-directory: android
         run: chmod +x gradlew && ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk quran-kareem.apk
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" quran-kareem.apk \
+            --title "Quran Kareem $TAG" \
+            --notes "تحميل أحدث إصدار من تطبيق القرآن الكريم" \
+            --latest
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: quran-kareem-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: quran-kareem.apk
