@@ -1,9 +1,12 @@
 import type { Ayah, Surah } from '../types';
+
 export const RECITERS = [
-  { id: 'ar.yasseraldossari', name: 'ياسر الدوسري', folder: 'Yasser_Ad-Dussary_128kbps' },
-
+  {
+    id: 'ar.yasseraldossari',
+    name: 'ياسر الدوسري',
+    folder: 'Yasser_Ad-Dussary_128kbps',
+  },
 ] as const;
-
 
 export type ReciterId = typeof RECITERS[number]['id'];
 
@@ -12,40 +15,100 @@ type OfflineQuran = {
   ayahs: Record<string, Ayah[]>;
 };
 
-type RawQuran = Record<string, Array<{ chapter: number; verse: number; text: string }>>;
-type RawChapter = { id: number; name: string; transliteration: string; translation: string; type: string; total_verses: number };
-type RawPage = { page: number; sura: number; aya: number };
+type RawQuran = Record<
+  string,
+  Array<{
+    chapter: number;
+    verse: number;
+    text: string;
+  }>
+>;
+
+type RawChapter = {
+  id: number;
+  name: string;
+  transliteration: string;
+  translation: string;
+  type: string;
+  total_verses: number;
+};
+
+type RawPage = {
+  page: number;
+  sura: number;
+  aya: number;
+};
 
 let offlinePromise: Promise<OfflineQuran> | null = null;
+
+/**
+ * Vite يضبط BASE_URL حسب البيئة:
+ * - GitHub Pages: /quran-kareem/
+ * - Android/Capacitor: ./ 
+ *
+ * لذلك نستخدمه بدل كتابة /data مباشرة.
+ */
+const baseUrl = import.meta.env.BASE_URL;
+
+function assetPath(path: string): string {
+  return `${baseUrl}${path}`.replace(/([^:]\/)\/+/g, '$1');
+}
 
 async function loadOfflineQuran(): Promise<OfflineQuran> {
   if (!offlinePromise) {
     offlinePromise = Promise.all([
-      fetch('/data/quran.json').then((r) => {
-        if (!r.ok) throw new Error('ملف القرآن المحلي غير موجود');
+      fetch(assetPath('data/quran.json')).then((r) => {
+        if (!r.ok) {
+          throw new Error(
+            `ملف القرآن المحلي غير موجود: ${r.status} ${r.statusText}`,
+          );
+        }
+
         return r.json() as Promise<RawQuran>;
       }),
-      fetch('/data/chapters.json').then((r) => {
-        if (!r.ok) throw new Error('بيانات السور المحلية غير موجودة');
+
+      fetch(assetPath('data/chapters.json')).then((r) => {
+        if (!r.ok) {
+          throw new Error(
+            `بيانات السور المحلية غير موجودة: ${r.status} ${r.statusText}`,
+          );
+        }
+
         return r.json() as Promise<RawChapter[]>;
       }),
-      fetch('/data/pages.json').then((r) => (r.ok ? r.json() as Promise<RawPage[]> : [])),
+
+      fetch(assetPath('data/pages.json')).then((r) =>
+        r.ok ? (r.json() as Promise<RawPage[]>) : [],
+      ),
     ]).then(([rawQuran, chapters, pageStarts]) => {
       const pageMap = new Map<string, number>();
-      const sortedPages = [...pageStarts].sort((a, b) => a.page - b.page);
+
+      const sortedPages = [...pageStarts].sort(
+        (a, b) => a.page - b.page,
+      );
 
       for (const chapter of Object.keys(rawQuran)) {
         const verses = rawQuran[chapter] ?? [];
+
         for (const verse of verses) {
           let page = 0;
+
           for (const start of sortedPages) {
-            if (start.sura < verse.chapter || (start.sura === verse.chapter && start.aya <= verse.verse)) {
+            if (
+              start.sura < verse.chapter ||
+              (start.sura === verse.chapter &&
+                start.aya <= verse.verse)
+            ) {
               page = start.page;
             } else {
               break;
             }
           }
-          pageMap.set(`${verse.chapter}:${verse.verse}`, page);
+
+          pageMap.set(
+            `${verse.chapter}:${verse.verse}`,
+            page,
+          );
         }
       }
 
@@ -55,20 +118,37 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
         englishName: chapter.transliteration,
         englishNameTranslation: chapter.translation,
         numberOfAyahs: chapter.total_verses,
-        revelationType: chapter.type === 'meccan' ? 'Meccan' : 'Medinan',
+        revelationType:
+          chapter.type === 'meccan'
+            ? 'Meccan'
+            : 'Medinan',
       }));
 
       const ayahs: Record<string, Ayah[]> = {};
+
       for (const chapter of Object.keys(rawQuran)) {
-        ayahs[chapter] = (rawQuran[chapter] ?? []).map((verse) => ({
-          number: Number(`${verse.chapter}${String(verse.verse).padStart(3, '0')}`),
-          numberInSurah: verse.verse,
-          text: verse.text,
-          page: pageMap.get(`${verse.chapter}:${verse.verse}`) || undefined,
-        }));
+        ayahs[chapter] = (rawQuran[chapter] ?? []).map(
+          (verse) => ({
+            number: Number(
+              `${verse.chapter}${String(verse.verse).padStart(
+                3,
+                '0',
+              )}`,
+            ),
+            numberInSurah: verse.verse,
+            text: verse.text,
+            page:
+              pageMap.get(
+                `${verse.chapter}:${verse.verse}`,
+              ) || undefined,
+          }),
+        );
       }
 
-      return { surahs, ayahs };
+      return {
+        surahs,
+        ayahs,
+      };
     });
   }
 
@@ -76,13 +156,19 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
 }
 
 export function getReciter(id: string) {
-  return RECITERS.find((reciter) => reciter.id === id) || RECITERS[0];
+  return (
+    RECITERS.find((reciter) => reciter.id === id) ||
+    RECITERS[0]
+  );
 }
 
 export function normalizeArabic(text: string): string {
   return text
     .normalize('NFKD')
-    .replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g, '')
+    .replace(
+      /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g,
+      '',
+    )
     .replace(/\u0640/g, '')
     .replace(/[أإآٱ]/g, 'ا')
     .replace(/ؤ/g, 'و')
@@ -95,53 +181,137 @@ export function normalizeArabic(text: string): string {
     .toLowerCase();
 }
 
-export function everyAyahAudio(surah: number, ayah: number, reciterId: string): string {
+export function everyAyahAudio(
+  surah: number,
+  ayah: number,
+  reciterId: string,
+): string {
   const reciter = getReciter(reciterId);
-  const file = `${String(surah).padStart(3, '0')}${String(ayah).padStart(3, '0')}.mp3`;
-  return `/audio/${reciter.folder}/${file}`;
+
+  const file = `${String(surah).padStart(
+    3,
+    '0',
+  )}${String(ayah).padStart(3, '0')}.mp3`;
+
+  return assetPath(
+    `audio/${reciter.folder}/${file}`,
+  );
 }
 
-export function surahPlaylist(surah: number, numberOfAyahs: number, reciterId: string): string[] {
-  return Array.from({ length: numberOfAyahs }, (_, index) => everyAyahAudio(surah, index + 1, reciterId));
+export function surahPlaylist(
+  surah: number,
+  numberOfAyahs: number,
+  reciterId: string,
+): string[] {
+  return Array.from(
+    { length: numberOfAyahs },
+    (_, index) =>
+      everyAyahAudio(
+        surah,
+        index + 1,
+        reciterId,
+      ),
+  );
 }
 
 export const quranApi = {
-  surahs: async () => (await loadOfflineQuran()).surahs,
+  surahs: async () =>
+    (await loadOfflineQuran()).surahs,
 
   surah: async (id: number) => {
     const data = await loadOfflineQuran();
-    const surah = data.surahs.find((item) => item.number === id);
-    if (!surah) throw new Error('السورة غير موجودة');
-    return { ...surah, ayahs: data.ayahs[String(id)] ?? [] };
+
+    const surah = data.surahs.find(
+      (item) => item.number === id,
+    );
+
+    if (!surah) {
+      throw new Error('السورة غير موجودة');
+    }
+
+    return {
+      ...surah,
+      ayahs: data.ayahs[String(id)] ?? [],
+    };
   },
 
   search: async (query: string) => {
     const data = await loadOfflineQuran();
-    const normalized = normalizeArabic(query);
-    const matches: Array<any> = [];
 
-    if (!normalized) return { matches, count: 0, query, total: 0 };
+    const normalized = normalizeArabic(query);
+
+    const matches: Array<{
+      numberInSurah: number;
+      text: string;
+      surah: {
+        number: number;
+        name: string;
+        englishName: string;
+      };
+    }> = [];
+
+    if (!normalized) {
+      return {
+        matches,
+        count: 0,
+        query,
+        total: 0,
+      };
+    }
 
     for (const surah of data.surahs) {
-      for (const ayah of data.ayahs[String(surah.number)] ?? []) {
-        if (normalizeArabic(ayah.text).includes(normalized)) {
+      for (
+        const ayah of
+          data.ayahs[String(surah.number)] ?? []
+      ) {
+        if (
+          normalizeArabic(ayah.text).includes(
+            normalized,
+          )
+        ) {
           matches.push({
-            numberInSurah: ayah.numberInSurah,
+            numberInSurah:
+              ayah.numberInSurah,
             text: ayah.text,
             surah: {
               number: surah.number,
               name: surah.name,
-              englishName: surah.englishName,
+              englishName:
+                surah.englishName,
             },
           });
         }
       }
     }
 
-    return { matches, count: matches.length, query, total: matches.length };
+    return {
+      matches,
+      count: matches.length,
+      query,
+      total: matches.length,
+    };
   },
 
-  audio: (surah: number, ayah: number, edition = 'ar.alafasy') => everyAyahAudio(surah, ayah, edition),
-  surahAudio: (id: number, edition = 'ar.alafasy') => everyAyahAudio(id, 1, edition),
+  audio: (
+    surah: number,
+    ayah: number,
+    edition = 'ar.alafasy',
+  ) =>
+    everyAyahAudio(
+      surah,
+      ayah,
+      edition,
+    ),
+
+  surahAudio: (
+    id: number,
+    edition = 'ar.alafasy',
+  ) =>
+    everyAyahAudio(
+      id,
+      1,
+      edition,
+    ),
+
   surahPlaylist,
 };
