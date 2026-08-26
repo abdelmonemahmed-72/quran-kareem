@@ -8,7 +8,6 @@ import Quran from "./pages/Quran";
 import Surah from "./pages/Surah";
 import SearchPage from "./pages/SearchPage";
 import Bookmarks from "./pages/Bookmarks";
-import Audio from "./pages/Audio";
 import Azkar from "./pages/Azkar";
 import Tasbeeh from "./pages/Tasbeeh";
 import Prayer from "./pages/Prayer";
@@ -37,8 +36,6 @@ export default function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
 
-            {/* الصوت */}
-            <Route path="/audio" element={<Audio />} />
 
             {/* الأذكار والتسبيح */}
             <Route path="/azkar" element={<Azkar />} />

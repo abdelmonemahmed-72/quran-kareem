@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Quran Kareem - تحميل التطبيق</title>
+
+  <meta
+    name="description"
+    content="تحميل تطبيق القرآن الكريم - قرآن كريم يعمل بدون إنترنت"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at top, #183b35 0%, #071512 45%, #030908 100%);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: auto;
+      padding: 55px 0;
+    }
+
+    .hero {
+      text-align: center;
+    }
+
+    .icon {
+      width: 105px;
+      height: 105px;
+      margin: 0 auto 22px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 55px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 8vw, 64px);
+      letter-spacing: -2px;
+    }
+
+    .subtitle {
+      color: #c9ddd7;
+      font-size: 20px;
+      line-height: 1.8;
+      margin: 15px auto 30px;
+      max-width: 650px;
+    }
+
+    .download-btn {
+      display: inline-block;
+      background: #d8b46a;
+      color: #15100a;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 17px 42px;
+      border-radius: 15px;
+      box-shadow: 0 12px 35px rgba(216,180,106,.25);
+      transition: .2s;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 45px rgba(216,180,106,.35);
+    }
+
+    .download-note {
+      margin-top: 14px;
+      color: #9db4ae;
+      font-size: 14px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 55px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .card-icon {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      margin: 5px 0 10px;
+      font-size: 19px;
+    }
+
+    .card p {
+      color: #aebfbb;
+      line-height: 1.7;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .steps {
+      margin-top: 55px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 24px;
+      padding: 30px;
+    }
+
+    .steps h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 18px 0;
+      color: #d5e0dd;
+    }
+
+    .number {
+      min-width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #d8b46a;
+      color: #15100a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: #71837f;
+      margin-top: 50px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      .features {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 35px 0;
+      }
+
+      .download-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <section class="hero">
+
+      <div class="icon">🕌</div>
+
+      <h1>Quran Kareem</h1>
+
+      <p class="subtitle">
+        القرآن الكريم بين يديك،
+        بتجربة بسيطة وسريعة، مع إمكانية استخدام التطبيق
+        بدون الحاجة إلى اتصال بالإنترنت.
+      </p>
+
+      <a
+        class="download-btn"
+        href="https://github.com/abdelmonemahmed-72/quran-kareem/releases/latest/download/quran-kareem.apk"
+      >
+        📥 تحميل التطبيق
+      </a>
+
+      <div class="download-note">
+        تطبيق Android • أحدث إصدار
+      </div>
+
+    </section>
+
+    <section class="features">
+
+      <div class="card">
+        <div class="card-icon">📖</div>
+        <h3>القرآن الكريم</h3>
+        <p>
+          المصحف بين يديك بتجربة سهلة ومريحة.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">📡</div>
+        <h3>بدون إنترنت</h3>
+        <p>
+          استخدم المحتوى المتوفر داخل التطبيق بدون اتصال.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🎧</div>
+        <h3>التلاوات</h3>
+        <p>
+          استمتع بتجربة الاستماع إلى التلاوات المتوفرة داخل التطبيق.
+        </p>
+      </div>
+
+    </section>
+
+    <section class="steps">
+
+      <h2>طريقة تحميل التطبيق</h2>
+
+      <div class="step">
+        <div class="number">1</div>
+        <div>اضغط على زر <strong>تحميل التطبيق</strong>.</div>
+      </div>
+
+      <div class="step">
+        <div class="number">2</div>
+        <div>انتظر حتى يكتمل تحميل ملف التطبيق.</div>
+      </div>
+
+      <div class="step">
+        <div class="number">3</div>
+        <div>افتح ملف APK واضغط <strong>تثبيت</strong>.</div>
+      </div>
+
+      <div class="step">
+        <div class="number">4</div>
+        <div>افتح التطبيق واستمتع بالقرآن الكريم.</div>
+      </div>
+
+    </section>
+
+    <footer>
+      © Quran Kareem
+    </footer>
+
+  </main>
+
+</body>
+</html>

@@ -4,7 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
-  Play,
   Bookmark as BookmarkIcon,
   Copy,
   Share2,
@@ -17,16 +16,15 @@ import type {
 
 import { useApp } from "../contexts/AppContext";
 import { quranApi } from "../services/quran";
-import AudioPlayer from "../components/AudioPlayer";
 import Loading from "../components/Loading";
 import { ErrorState } from "../components/States";
+
 export default function Surah() {
   const { id } = useParams();
   const n = Number(id) || 1;
 
   const [s, setS] = useState<(S & { ayahs: Ayah[] }) | null>(null);
   const [err, setErr] = useState(false);
-  const [audioPlaylist, setAudioPlaylist] = useState<string[]>([]);
   const [selectedAyah, setSelectedAyah] = useState<number | null>(null);
 
   const {
@@ -91,16 +89,6 @@ export default function Surah() {
     return <Loading />;
   }
 
-  const playSurah = () => {
-    setAudioPlaylist(
-      quranApi.surahPlaylist(
-        n,
-        s.numberOfAyahs,
-        settings.reciter
-      )
-    );
-  };
-
   /*
    * تجميع الآيات حسب رقم صفحة المصحف.
    * الـAPI يوفر رقم الصفحة لكل آية.
@@ -151,15 +139,6 @@ export default function Surah() {
             السابقة
           </Link>
 
-          <button
-            type="button"
-            className="pill"
-            onClick={playSurah}
-          >
-            <Play size={16} />
-            تشغيل
-          </button>
-
           <Link
             className="pill"
             to={`/quran/${Math.min(114, n + 1)}`}
@@ -181,6 +160,7 @@ export default function Surah() {
             }`}
           >
             <div className="mushaf-page-border">
+
               {/* رأس الصفحة */}
               <div className="mushaf-page-topline">
                 <span>الجزء</span>
@@ -237,11 +217,11 @@ export default function Surah() {
                 }}
               >
                 {ayahs.map((a) => {
-                 const saved = bookmarks.some(
-                (b: any) =>
-                b.surah === n &&
-                b.ayah === a.numberInSurah
-);
+                  const saved = bookmarks.some(
+                    (b: any) =>
+                      b.surah === n &&
+                      b.ayah === a.numberInSurah
+                  );
 
                   const selected =
                     selectedAyah === a.numberInSurah;
@@ -288,23 +268,6 @@ export default function Surah() {
                             e.stopPropagation()
                           }
                         >
-                          {/* تشغيل */}
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setAudioPlaylist([
-                                quranApi.audio(
-                                  n,
-                                  a.numberInSurah,
-                                  settings.reciter
-                                ),
-                              ])
-                            }
-                            aria-label="استماع"
-                          >
-                            <Play size={13} />
-                          </button>
-
                           {/* حفظ */}
                           <button
                             type="button"
@@ -384,15 +347,6 @@ export default function Surah() {
           السورة السابقة
         </Link>
 
-        <button
-          type="button"
-          className="btn-gold"
-          onClick={playSurah}
-        >
-          <Play size={17} />
-          تشغيل السورة
-        </button>
-
         <Link
           className="btn-secondary"
           to={`/quran/${Math.min(114, n + 1)}`}
@@ -401,14 +355,6 @@ export default function Surah() {
           <ChevronLeft size={17} />
         </Link>
       </div>
-
-      {/* مشغل الصوت */}
-      {audioPlaylist.length > 0 && (
-        <AudioPlayer
-          playlist={audioPlaylist}
-          title={`${s.name} • ${settings.reciter}`}
-        />
-      )}
     </div>
   );
 }

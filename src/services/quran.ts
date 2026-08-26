@@ -1,14 +1,4 @@
-import type { Ayah, Surah } from '../types';
-
-export const RECITERS = [
-  {
-    id: 'ar.yasseraldossari',
-    name: 'ياسر الدوسري',
-    folder: 'Yasser_Ad-Dussary_128kbps',
-  },
-] as const;
-
-export type ReciterId = typeof RECITERS[number]['id'];
+import type { Ayah, Surah } from "../types";
 
 type OfflineQuran = {
   surahs: Surah[];
@@ -44,29 +34,29 @@ let offlinePromise: Promise<OfflineQuran> | null = null;
 /*
  * مسارات الملفات المحلية
  *
- * على GitHub Pages:
- *   /quran-kareem/data/...
+ * GitHub Pages:
+ *   https://abdelmonemahmed-72.github.io/quran-kareem/data/...
  *
- * داخل Android / Capacitor:
+ * Android / Capacitor:
  *   /data/...
  *
- * نستخدم document.baseURI حتى لا نعتمد على import.meta.env
- * وبالتالي يعمل TypeScript و Android بدون مشكلة.
+ * Localhost:
+ *   /data/...
  */
 function assetPath(path: string): string {
-  const cleanPath = path.replace(/^\/+/, '');
+  const cleanPath = path.replace(/^\/+/, "");
 
-  try {
-    return new URL(cleanPath, document.baseURI).toString();
-  } catch {
-    return `./${cleanPath}`;
+  if (window.location.hostname.endsWith("github.io")) {
+    return `/quran-kareem/${cleanPath}`;
   }
+
+  return `/${cleanPath}`;
 }
 
 async function loadOfflineQuran(): Promise<OfflineQuran> {
   if (!offlinePromise) {
     offlinePromise = Promise.all([
-      fetch(assetPath('data/quran.json')).then((r) => {
+      fetch(assetPath("data/quran.json")).then((r) => {
         if (!r.ok) {
           throw new Error(
             `ملف القرآن المحلي غير موجود: ${r.status} ${r.statusText}`,
@@ -76,7 +66,7 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
         return r.json() as Promise<RawQuran>;
       }),
 
-      fetch(assetPath('data/chapters.json')).then((r) => {
+      fetch(assetPath("data/chapters.json")).then((r) => {
         if (!r.ok) {
           throw new Error(
             `بيانات السور المحلية غير موجودة: ${r.status} ${r.statusText}`,
@@ -86,7 +76,7 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
         return r.json() as Promise<RawChapter[]>;
       }),
 
-      fetch(assetPath('data/pages.json')).then((r) =>
+      fetch(assetPath("data/pages.json")).then((r) =>
         r.ok ? (r.json() as Promise<RawPage[]>) : [],
       ),
     ]).then(([rawQuran, chapters, pageStarts]) => {
@@ -128,9 +118,9 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
         englishNameTranslation: chapter.translation,
         numberOfAyahs: chapter.total_verses,
         revelationType:
-          chapter.type === 'meccan'
-            ? 'Meccan'
-            : 'Medinan',
+          chapter.type === "meccan"
+            ? "Meccan"
+            : "Medinan",
       }));
 
       const ayahs: Record<string, Ayah[]> = {};
@@ -141,7 +131,7 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
             number: Number(
               `${verse.chapter}${String(
                 verse.verse,
-              ).padStart(3, '0')}`,
+              ).padStart(3, "0")}`,
             ),
 
             numberInSurah: verse.verse,
@@ -166,62 +156,23 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
   return offlinePromise;
 }
 
-export function getReciter(id: string) {
-  return (
-    RECITERS.find((reciter) => reciter.id === id) ||
-    RECITERS[0]
-  );
-}
-
 export function normalizeArabic(text: string): string {
   return text
-    .normalize('NFKD')
+    .normalize("NFKD")
     .replace(
       /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g,
-      '',
+      "",
     )
-    .replace(/\u0640/g, '')
-    .replace(/[أإآٱ]/g, 'ا')
-    .replace(/ؤ/g, 'و')
-    .replace(/ئ/g, 'ي')
-    .replace(/ى/g, 'ي')
-    .replace(/ة/g, 'ه')
-    .replace(/[\u200C-\u200F\u202A-\u202E]/g, '')
-    .replace(/\s+/g, ' ')
+    .replace(/\u0640/g, "")
+    .replace(/[أإآٱ]/g, "ا")
+    .replace(/ؤ/g, "و")
+    .replace(/ئ/g, "ي")
+    .replace(/ى/g, "ي")
+    .replace(/ة/g, "ه")
+    .replace(/[\u200C-\u200F\u202A-\u202E]/g, "")
+    .replace(/\s+/g, " ")
     .trim()
     .toLowerCase();
-}
-
-export function everyAyahAudio(
-  surah: number,
-  ayah: number,
-  reciterId: string,
-): string {
-  const reciter = getReciter(reciterId);
-
-  const file =
-    `${String(surah).padStart(3, '0')}` +
-    `${String(ayah).padStart(3, '0')}.mp3`;
-
-  return assetPath(
-    `audio/${reciter.folder}/${file}`,
-  );
-}
-
-export function surahPlaylist(
-  surah: number,
-  numberOfAyahs: number,
-  reciterId: string,
-): string[] {
-  return Array.from(
-    { length: numberOfAyahs },
-    (_, index) =>
-      everyAyahAudio(
-        surah,
-        index + 1,
-        reciterId,
-      ),
-  );
 }
 
 export const quranApi = {
@@ -236,7 +187,7 @@ export const quranApi = {
     );
 
     if (!surah) {
-      throw new Error('السورة غير موجودة');
+      throw new Error("السورة غير موجودة");
     }
 
     return {
@@ -303,27 +254,4 @@ export const quranApi = {
       total: matches.length,
     };
   },
-
-  audio: (
-    surah: number,
-    ayah: number,
-    edition = 'ar.yasseraldossari',
-  ) =>
-    everyAyahAudio(
-      surah,
-      ayah,
-      edition,
-    ),
-
-  surahAudio: (
-    id: number,
-    edition = 'ar.yasseraldossari',
-  ) =>
-    everyAyahAudio(
-      id,
-      1,
-      edition,
-    ),
-
-  surahPlaylist,
 };

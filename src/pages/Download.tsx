@@ -13,7 +13,6 @@ import {
 
 const APK_URL =
   'https://github.com/abdelmonemahmed-72/quran-kareem/releases/latest/download/quran-kareem.apk';
-
 const features = [
   {
     icon: BookOpen,
