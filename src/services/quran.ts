@@ -1,24 +1,7 @@
 import type { Ayah, Surah } from '../types';
 export const RECITERS = [
-  { id: 'ar.alafasy', name: 'مشاري راشد العفاسي', folder: 'Alafasy_128kbps' },
-  { id: 'ar.abdulbasitmurattal', name: 'عبد الباسط عبد الصمد', folder: 'Abdul_Basit_Murattal_192kbps' },
-  { id: 'ar.husary', name: 'محمود خليل الحصري', folder: 'Husary_128kbps' },
-  { id: 'ar.minshawy', name: 'محمد صديق المنشاوي', folder: 'Minshawy_Murattal_128kbps' },
-  { id: 'ar.mahermuaiqly', name: 'ماهر المعيقلي', folder: 'MaherAlMuaiqly128kbps' },
-  { id: 'ar.saoodshuraym', name: 'سعود الشريم', folder: 'Saood_ash-Shuraym_128kbps' },
   { id: 'ar.yasseraldossari', name: 'ياسر الدوسري', folder: 'Yasser_Ad-Dussary_128kbps' },
-  { id: 'ar.saadalsalame', name: 'سعد الغامدي', folder: 'Ghamadi_40kbps' },
-  { id: 'ar.sudais', name: 'عبد الرحمن السديس', folder: 'Abdurrahmaan_As-Sudais_192kbps' },
-  { id: 'ar.faresabbad', name: 'فارس عباد', folder: 'Fares_Abbad_64kbps' },
-  { id: 'ar.abdullahbasfar', name: 'عبد الله بصفر', folder: 'Abdullah_Basfar_192kbps' },
-  { id: 'ar.hudhaify', name: 'علي الحذيفي', folder: 'Hudhaify_128kbps' },
-  { id: 'ar.juhany', name: 'عبد الله عواد الجهني', folder: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps' },
-  { id: 'ar.ahmedneana', name: 'أحمد نعينة', folder: 'Ahmed_Neana_128kbps' },
-  { id: 'ar.muhammadjibreel', name: 'محمد جبريل', folder: 'Muhammad_Jibreel_128kbps' },
-  { id: 'ar.tablaway', name: 'محمد محمود الطبلاوي', folder: 'Mohammad_al_Tablaway_128kbps' },
-  { id: 'ar.nasserqatami', name: 'ناصر القطامي', folder: 'Nasser_Alqatami_128kbps' },
-  { id: 'ar.aliabdelrahman', name: 'علي جابر', folder: 'Ali_Jaber_64kbps' },
-  { id: 'ar.salahbudair', name: 'صلاح البدير', folder: 'Salah_Al_Budair_128kbps' },
+
 ] as const;
 
 
