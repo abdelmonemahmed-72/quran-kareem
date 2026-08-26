@@ -41,17 +41,26 @@ type RawPage = {
 
 let offlinePromise: Promise<OfflineQuran> | null = null;
 
-/**
- * Vite يضبط BASE_URL حسب البيئة:
- * - GitHub Pages: /quran-kareem/
- * - Android/Capacitor: ./ 
+/*
+ * مسارات الملفات المحلية
  *
- * لذلك نستخدمه بدل كتابة /data مباشرة.
+ * على GitHub Pages:
+ *   /quran-kareem/data/...
+ *
+ * داخل Android / Capacitor:
+ *   /data/...
+ *
+ * نستخدم document.baseURI حتى لا نعتمد على import.meta.env
+ * وبالتالي يعمل TypeScript و Android بدون مشكلة.
  */
-const baseUrl = import.meta.env.BASE_URL;
-
 function assetPath(path: string): string {
-  return `${baseUrl}${path}`.replace(/([^:]\/)\/+/g, '$1');
+  const cleanPath = path.replace(/^\/+/, '');
+
+  try {
+    return new URL(cleanPath, document.baseURI).toString();
+  } catch {
+    return `./${cleanPath}`;
+  }
 }
 
 async function loadOfflineQuran(): Promise<OfflineQuran> {
@@ -130,13 +139,15 @@ async function loadOfflineQuran(): Promise<OfflineQuran> {
         ayahs[chapter] = (rawQuran[chapter] ?? []).map(
           (verse) => ({
             number: Number(
-              `${verse.chapter}${String(verse.verse).padStart(
-                3,
-                '0',
-              )}`,
+              `${verse.chapter}${String(
+                verse.verse,
+              ).padStart(3, '0')}`,
             ),
+
             numberInSurah: verse.verse,
+
             text: verse.text,
+
             page:
               pageMap.get(
                 `${verse.chapter}:${verse.verse}`,
@@ -188,10 +199,9 @@ export function everyAyahAudio(
 ): string {
   const reciter = getReciter(reciterId);
 
-  const file = `${String(surah).padStart(
-    3,
-    '0',
-  )}${String(ayah).padStart(3, '0')}.mp3`;
+  const file =
+    `${String(surah).padStart(3, '0')}` +
+    `${String(ayah).padStart(3, '0')}.mp3`;
 
   return assetPath(
     `audio/${reciter.folder}/${file}`,
@@ -272,7 +282,9 @@ export const quranApi = {
           matches.push({
             numberInSurah:
               ayah.numberInSurah,
+
             text: ayah.text,
+
             surah: {
               number: surah.number,
               name: surah.name,
@@ -295,7 +307,7 @@ export const quranApi = {
   audio: (
     surah: number,
     ayah: number,
-    edition = 'ar.alafasy',
+    edition = 'ar.yasseraldossari',
   ) =>
     everyAyahAudio(
       surah,
@@ -305,7 +317,7 @@ export const quranApi = {
 
   surahAudio: (
     id: number,
-    edition = 'ar.alafasy',
+    edition = 'ar.yasseraldossari',
   ) =>
     everyAyahAudio(
       id,

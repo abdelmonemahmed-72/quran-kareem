@@ -2,14 +2,19 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const isCapacitor = process.env.CAPACITOR_BUILD === 'true';
+
 export default defineConfig({
-  base: '/quran-kareem/',
+  base: isCapacitor ? './' : '/quran-kareem/',
 
   plugins: [
     react(),
+
     VitePWA({
       registerType: 'autoUpdate',
+
       includeAssets: ['favicon.svg'],
+
       manifest: {
         name: 'القرآن الكريم',
         short_name: 'القرآن الكريم',
@@ -19,11 +24,25 @@ export default defineConfig({
         display: 'standalone',
         dir: 'rtl',
         lang: 'ar',
+
         icons: [
-          { src: '/quran-kareem/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/quran-kareem/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          {
+            src: isCapacitor
+              ? 'icons/icon-192.png'
+              : '/quran-kareem/icons/icon-192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: isCapacitor
+              ? 'icons/icon-512.png'
+              : '/quran-kareem/icons/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
         ],
       },
+
       workbox: {
         globPatterns: ['**/*.{js,css,html,json,svg,png,woff2,mp3}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
